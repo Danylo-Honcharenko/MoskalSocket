@@ -1,0 +1,4 @@
+<ServerConfiguration>
+    <port>8081</port>
+    <restriction>1</restriction>
+</ServerConfiguration>
