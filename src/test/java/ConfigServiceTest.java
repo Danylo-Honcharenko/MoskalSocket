@@ -17,8 +17,6 @@ public class ConfigServiceTest {
 
     @Test
     public void read() {
-        ConfigService config = new ConfigService();
-
         ServerConfiguration actual = config.read();
 
         Assert.assertEquals(expected.getPort(), actual.getPort());
