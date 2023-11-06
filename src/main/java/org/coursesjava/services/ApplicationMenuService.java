@@ -21,8 +21,8 @@ public class ApplicationMenuService {
             System.out.println("Server started on port " + cfg.getPort());
 
             Socket client = server.accept();
-            System.out.println("The client has connected: " + client.getPort());
-            try {
+            try (client) {
+                System.out.println("The client has connected: " + client.getPort());
                 writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
                 writer.write("Привіт, я сервер!:)\n");
                 writer.flush();
@@ -56,7 +56,6 @@ public class ApplicationMenuService {
                     writer.flush();
                 }
             } finally {
-                client.close();
                 writer.close();
                 reader.close();
             }
