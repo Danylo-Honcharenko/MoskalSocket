@@ -23,12 +23,10 @@ public class ConfigService {
     public ServerConfiguration read() {
         ServerConfiguration config = null;
         try {
-            try {
-                config = mapper.readValue(this.config, ServerConfiguration.class);
-            } catch (FileNotFoundException fileNotFound) {
-                System.err.println("File \"config.xml\" not found! We will create it automatically, exit from program!");
-                create();
-            }
+            config = mapper.readValue(this.config, ServerConfiguration.class);
+        } catch (FileNotFoundException fileNotFound) {
+            System.err.println("File \"config.xml\" not found! We will create it automatically, exit from program!");
+            create();
         } catch (IOException ex) {
             System.err.println("File read error! " + ex.getMessage());
         }
