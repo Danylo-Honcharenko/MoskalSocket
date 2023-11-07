@@ -1,5 +1,6 @@
 package org.coursesjava.services;
 
+import org.coursesjava.Logger;
 import org.coursesjava.Word;
 import org.coursesjava.model.ServerConfiguration;
 
@@ -63,8 +64,8 @@ public class ApplicationMenuService {
             System.out.println("Connection interrupted!");
             System.out.println("==============");
         } catch (Exception ex) {
-            System.err.println("Socket error!");
-            ex.printStackTrace();
+            System.err.println("Socket error! More in \"moskalSocket.log\"");
+            Logger.write("Socket error!", ex);
         }
     }
 
