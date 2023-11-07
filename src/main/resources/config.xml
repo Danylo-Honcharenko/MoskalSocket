@@ -1,1 +1,1 @@
-<ServerConfiguration><port>8080</port><restriction>1</restriction></ServerConfiguration>
+<ServerConfiguration><port>8080</port><maxConcurrentConnections>1</maxConcurrentConnections></ServerConfiguration>

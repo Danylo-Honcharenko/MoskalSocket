@@ -17,7 +17,7 @@ public class ApplicationMenuService {
     private BufferedReader reader;
     public void start() {
 
-        try (ServerSocket server = new ServerSocket(cfg.getPort(), cfg.getRestriction())) {
+        try (ServerSocket server = new ServerSocket(cfg.getPort(), cfg.getMaxConcurrentConnections())) {
             System.out.println("==============");
             System.out.println("Server started on port " + cfg.getPort());
 
@@ -73,7 +73,7 @@ public class ApplicationMenuService {
         System.out.println("+=================+");
         System.out.println("Your server configuration: ");
         System.out.println("Port: " + cfg.getPort());
-        System.out.println("Restriction: " + cfg.getRestriction());
+        System.out.println("Restriction: " + cfg.getMaxConcurrentConnections());
         System.out.println("+=================+");
     }
 

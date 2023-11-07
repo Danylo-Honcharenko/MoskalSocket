@@ -12,7 +12,7 @@ public class ConfigServiceTest {
         ServerConfiguration actual = config.read();
 
         Assert.assertEquals(expected.getPort(), actual.getPort());
-        Assert.assertEquals(expected.getRestriction(), actual.getRestriction());
+        Assert.assertEquals(expected.getMaxConcurrentConnections(), actual.getMaxConcurrentConnections());
     }
 
     @Test
@@ -20,6 +20,6 @@ public class ConfigServiceTest {
         ServerConfiguration actual = config.read();
 
         Assert.assertEquals(expected.getPort(), actual.getPort());
-        Assert.assertEquals(expected.getRestriction(), actual.getRestriction());
+        Assert.assertEquals(expected.getMaxConcurrentConnections(), actual.getMaxConcurrentConnections());
     }
 }
