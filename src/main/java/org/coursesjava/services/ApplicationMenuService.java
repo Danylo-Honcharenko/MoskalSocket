@@ -1,7 +1,6 @@
 package org.coursesjava.services;
 
 import org.coursesjava.Logger;
-import org.coursesjava.Word;
 import org.coursesjava.model.ServerConfiguration;
 
 import java.io.*;
@@ -9,7 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+
 public class ApplicationMenuService {
     private final ConfigService config = new ConfigService();
     private final ServerConfiguration cfg = config.read();
@@ -30,16 +29,12 @@ public class ApplicationMenuService {
 
                 reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-                List<Character> RU_letters = List.of('ё', 'ъ', 'ы', 'э');
                 String receivedData = reader.readLine();
 
                 String currentDate = DateTimeFormatter.ofPattern("MMM dd, yyyy рік, hh:mm:ss")
                         .format(LocalDateTime.now());
 
-                boolean isRuLetter = new Word(receivedData)
-                        .forbidden(RU_letters);
-
-                if (isRuLetter) {
+                if (receivedData.matches(".*[ёъыэ]+.*")) {
                     writer.write("Що таке паляниця?: ");
                     writer.flush();
                     String isLoaf = reader.readLine();
