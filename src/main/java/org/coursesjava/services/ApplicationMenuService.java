@@ -1,66 +1,63 @@
 package org.coursesjava.services;
 
-import org.coursesjava.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.coursesjava.exceptions.ConfigFileFieldsEmptyException;
+import org.coursesjava.interfaces.ConfigMapper;
 import org.coursesjava.model.ServerConfiguration;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.NoSuchElementException;
 
 public class ApplicationMenuService {
-    private final ConfigService config = new ConfigService();
-    private final ServerConfiguration cfg = config.read();
-    private BufferedWriter writer;
-    private BufferedReader reader;
+    private final ConfigMapper config = new ConfigXmlService();
+    private ServerConfiguration cfg;
+    private static final Logger log = LogManager.getLogger(ApplicationMenuService.class);
     public void start() {
+        try {
+            cfg = config.read().orElseThrow();
 
-        try (ServerSocket server = new ServerSocket(cfg.getPort(), cfg.getMaxConcurrentConnections())) {
-            System.out.println("==============");
-            System.out.println("Server started on port " + cfg.getPort());
+            int port = cfg.getPort();
+            int maxConnection = cfg.getMaxConcurrentConnections();
 
-            Socket client = server.accept();
-            try (client) {
-                System.out.println("The client has connected: " + client.getPort());
-                writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-                writer.write("Привіт, я сервер!:)\n");
-                writer.flush();
+            try (ServerSocket server = new ServerSocket(port, maxConnection)) {
+                log.info("Server started on port: {}", cfg.getPort());
 
-                reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                try (Socket client = server.accept();
+                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()))) {
 
-                String receivedData = reader.readLine();
-
-                String currentDate = DateTimeFormatter.ofPattern("MMM dd, yyyy рік, hh:mm:ss")
-                        .format(LocalDateTime.now());
-
-                if (receivedData.matches(".*[ёъыэ]+.*")) {
-                    writer.write("Що таке паляниця?: ");
+                    log.info("The client has connected: {}", client.getPort());
+                    log.info("Server send message: Hello, I am server!:)");
+                    writer.write("Hello, I am server!:)\n");
                     writer.flush();
-                    String isLoaf = reader.readLine();
-                    if (isLoaf.equals("Хліб")) {
-                        writer.write(currentDate + "\n");
-                        writer.write("Бувай здоровий :)");
-                        writer.flush();
-                    } else {
-                        writer.write("Москалику я закриваю з'єднання...");
-                        writer.flush();
-                    }
-                } else {
-                    writer.write(currentDate + "\n");
-                    writer.write("Бувай здоровий :)");
+
+                    String clientMessage = reader.readLine();
+                    log.info("Client send message: {}", clientMessage);
+                    String currentDate = LocalDate.now()
+                            .format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+                    log.info("Server send date: {}", currentDate);
+                    writer.write("\n" + currentDate);
                     writer.flush();
                 }
-            } finally {
-                writer.close();
-                reader.close();
+                log.info("Connection closed!");
+            } catch (Exception ex) {
+                log.error("Socket", ex);
             }
-
-            System.out.println("Connection interrupted!");
-            System.out.println("==============");
-        } catch (Exception ex) {
-            System.err.println("Socket error! More in \"moskalSocket.log\"");
-            Logger.write("Socket error!", ex);
+        } catch (FileNotFoundException fileNotFound) {
+            log.warn("File \"config.xml\" not found! We will create it automatically, exit from program!");
+            config.create();
+        } catch (IOException IOex) {
+            log.error("File read error!", IOex);
+        } catch (ConfigFileFieldsEmptyException emptyFileFields) {
+            log.error("The configuration values are empty!");
+        } catch (NoSuchElementException noElemEx) {
+            log.error("The configuration file instance is empty!");
         }
     }
 
@@ -68,11 +65,7 @@ public class ApplicationMenuService {
         System.out.println("+=================+");
         System.out.println("Your server configuration: ");
         System.out.println("Port: " + cfg.getPort());
-        System.out.println("Restriction: " + cfg.getMaxConcurrentConnections());
+        System.out.println("Max connection: " + cfg.getMaxConcurrentConnections());
         System.out.println("+=================+");
-    }
-
-    public boolean exit() {
-        return true;
     }
 }

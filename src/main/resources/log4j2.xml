@@ -1,0 +1,21 @@
+<Configuration xmlns="http://logging.apache.org/log4j/2.0/config" status="WARN">
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{dd-MM-yyyy HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
+        </Console>
+        <File name="file" fileName="src/main/resources/logs/socket.log">
+            <PatternLayout pattern="%d{dd-MM-yyyy HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="org.coursesjava" level="trace">
+            <AppenderRef ref="console"/>
+        </Logger>
+        <Root level="INFO">
+            <AppenderRef ref="file"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
