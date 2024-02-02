@@ -62,10 +62,22 @@ public class ApplicationMenuService {
     }
 
     public void showConfig() {
-        System.out.println("+=================+");
-        System.out.println("Your server configuration: ");
-        System.out.println("Port: " + cfg.getPort());
-        System.out.println("Max connection: " + cfg.getMaxConcurrentConnections());
-        System.out.println("+=================+");
+        try {
+            cfg = config.read().orElseThrow();
+            System.out.println("+=================+");
+            System.out.println("Your server configuration: ");
+            System.out.println("Port: " + cfg.getPort());
+            System.out.println("Max connection: " + cfg.getMaxConcurrentConnections());
+            System.out.println("+=================+");
+        } catch (FileNotFoundException fileNotFound) {
+            log.warn("File \"config.xml\" not found! We will create it automatically, exit from program!");
+            config.create();
+        } catch (IOException IOex) {
+            log.error("File read error!", IOex);
+        } catch (ConfigFileFieldsEmptyException emptyFileFields) {
+            log.error("The configuration values are empty!");
+        } catch (NoSuchElementException noElemEx) {
+            log.error("The configuration file instance is empty!");
+        }
     }
 }
